@@ -28,9 +28,18 @@ def update_plot(continent):
         sns.histplot(filtered_data[col], kde=True)
         plt.title(f'Distribution de {col}')
 
+    # Afficher le heatmap de corrélation
+    plt.subplot(2, 2, len(filtered_data.columns) + 1)
+    correlation_matrix = filtered_data.corr()
+    sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=.5)
+    plt.title("Heatmap de Corrélation")
+
     # Tracé de nuages de points pour les paires de variables corrélées pour le continent sélectionné
+    plt.subplot(2, 2, len(filtered_data.columns) + 2)
     sns.pairplot(filtered_data, diag_kind='kde')
     plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({continent})')
+
+    plt.tight_layout()
 
     return plt
 
