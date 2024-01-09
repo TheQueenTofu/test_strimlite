@@ -11,7 +11,6 @@ region_selector = st.selectbox('Région:', ['Toutes les régions', 'US', 'Europe
 
 # Fonction de mise à jour du graphique en fonction de la région sélectionnée
 def update_plot(region):
-    plt.clf()  # Effacer le graphique précédent
     plt.figure(figsize=(12, 6))
     
     # Filtrer les données en fonction de la région sélectionnée
@@ -21,4 +20,18 @@ def update_plot(region):
     for i, col in enumerate(filtered_data.columns):
         plt.subplot(2, len(filtered_data.columns)//2, i+1)
         sns.histplot(filtered_data[col], kde=True)
-   
+        plt.title(f'Distribution de {col}')
+        plt.tight_layout()
+
+    # Tracé de nuages de points pour les paires de variables corrélées pour la région sélectionnée
+    sns.pairplot(filtered_data, diag_kind='kde')
+    plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({region})')
+
+    return plt
+
+# Afficher le widget et le graphique initial
+selected_region = region_selector
+if selected_region != 'Toutes les régions':
+    st.pyplot(update_plot(selected_region))
+else:
+    st.warning("Sélectionnez une région pour afficher le graphique.")
