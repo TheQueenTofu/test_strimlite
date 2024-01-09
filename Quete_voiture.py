@@ -17,7 +17,7 @@ def update_plot(region):
     plt.figure(figsize=(12, 6))
     
     # Filtrer les données en fonction de la région sélectionnée
-    filtered_data = donnees if region == 'Toutes les régions' else donnees[donnees['Continent'] == region]
+    filtered_data = donnees if region == 'Toutes les régions' else donnees[donnees['continent'] == region]
 
     # Tracé de la distribution de chaque variable pour la région sélectionnée
     for i, col in enumerate(filtered_data.columns):
