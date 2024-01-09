@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv')
 
 # Remove trailing period from 'continent' values
-donnees['continent'] = donnees['continent'].str.rstrip('.')
+donnees['continent'] = donnees['continent'].str.strip('.')
+
 
 # Création du widget pour sélectionner le continent
 continent_selector = st.selectbox('Continent:', ['Tous les continents', 'US', 'Europe', 'Japan'])
@@ -15,6 +16,7 @@ continent_selector = st.selectbox('Continent:', ['Tous les continents', 'US', 'E
 # Titre de l'application
 st.title("Analyse data des voitures entre les US, l'Europe et le Japon")
 
+# Fonction de mise à jour du graphique en fonction du continent sélectionné
 # Fonction de mise à jour du graphique en fonction du continent sélectionné
 def update_plot(continent):
     # Set Seaborn context to avoid tight layout issues
@@ -24,6 +26,9 @@ def update_plot(continent):
     
     # Filtrer les données en fonction du continent sélectionné
     filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'] == continent]
+
+    # Remove trailing periods and spaces in 'continent' column
+    filtered_data['continent'] = filtered_data['continent'].str.strip('.')
 
     # Display filtered_data for debugging
     st.write("Filtered Data:", filtered_data)
@@ -53,6 +58,7 @@ def update_plot(continent):
     plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({continent})')
 
     return plt
+
 
 
 # Afficher le widget et le graphique initial
