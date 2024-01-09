@@ -1,58 +1,40 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import ipywidgets as widgets
-from IPython.display import display
+import streamlit as st
 
 # Chargement des données (remplacez 'votre_fichier.csv' par le nom de votre fichier de données)
 donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv')
 
-# Nettoyer les espaces et les points dans la colonne 'continent'
-donnees['continent'] = donnees['continent'].str.strip().str.rstrip('.')
-
 # Création d'un widget pour sélectionner le continent
-continent_selector = widgets.Dropdown(
-    options=['Tous les continents', 'US', 'Europe', 'Japan'],
-    value='Tous les continents',
-    description='Continent:'
-)
+continent_selector = st.selectbox('Sélectionnez un continent', ['Tous les continents', 'US', 'Europe', 'Japan'])
 
-# Fonction de mise à jour du graphique en fonction du continent sélectionné
-def update_plot(continent):
-    # Set Seaborn context to avoid tight layout issues
-    sns.set_context(rc={"lines.linewidth": 0.8})
+# Filtrer les données en fonction du continent sélectionné
+if continent_selector != 'Tous les continents':
+    filtered_data = donnees[donnees['continent'] == continent_selector]
+else:
+    filtered_data = donnees
 
-    plt.figure(figsize=(16, 8))
-    
-    # Filtrer les données en fonction du continent sélectionné
-    filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'] == continent]
+# Affichage du titre
+st.title("Analyse des données des voitures entre les US, l'Europe et le Japon")
 
-    if filtered_data.empty:
-        widgets.warning(f"Aucune donnée disponible pour le continent {continent}. Veuillez sélectionner un autre continent.")
-        return plt
+# Afficher le nombre de données disponibles pour le continent sélectionné
+st.write(f"Nombre de données pour le continent {continent_selector}: {len(filtered_data)}")
 
-    # Tracé de la distribution de chaque variable pour le continent sélectionné
-    for i, col in enumerate(filtered_data.columns[:-1]):
-        plt.subplot(2, 4, i+1)
-        sns.histplot(filtered_data[col], kde=True)
-        plt.title(f'Distribution de {col}')
+# Afficher les statistiques descriptives
+st.write("Statistiques descriptives:")
+st.write(filtered_data.describe())
 
-    # Afficher le heatmap de corrélation
-    plt.subplot(2, 4, 8)
-    correlation_matrix = filtered_data.select_dtypes(include=['float64', 'int64']).corr().fillna(0)
-    sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=.5)
-    plt.title("Heatmap de Corrélation")
+# Afficher les colonnes uniques de la colonne 'continent'
+st.write("Uniques valeurs dans la colonne 'continent':", filtered_data['continent'].unique())
 
-    # Tracé de nuages de points pour les paires de variables corrélées pour le continent sélectionné
-    plt.subplot(2, 4, 5)
-    sns.pairplot(filtered_data, diag_kind='kde')
-    plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({continent})')
+# Afficher le nuage de points pour les variables corrélées
+st.write(f'Nuage de points pour les variables corrélées ({continent_selector}):')
+sns.pairplot(filtered_data, diag_kind='kde')
+st.pyplot()
 
-    plt.show()
-
-# Associer la fonction de mise à jour au changement de la valeur du widget
-widgets.interactive(update_plot, continent=continent_selector)
-
-# Afficher le widget et le graphique initial
-display(continent_selector)
-update_plot('Tous les continents')
+# Afficher le heatmap de corrélation
+st.write(f"Heatmap de corrélation ({continent_selector}):")
+correlation_matrix = filtered_data.select_dtypes(include=['float64', 'int64']).corr().fillna(0)
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=.5)
+st.pyplot()
