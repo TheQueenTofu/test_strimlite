@@ -12,32 +12,32 @@ st.write("Column Names:", donnees.columns)
 # Remove trailing period from 'continent' values
 donnees['continent'] = donnees['continent'].str.rstrip('.')
 
-# Création du widget pour sélectionner la région
-region_selector = st.selectbox('Région:', ['Toutes les régions', 'US', 'Europe', 'Japon'])
+# Création du widget pour sélectionner le continent
+continent_selector = st.selectbox('Continent:', ['Tous les continents', 'US', 'Europe', 'Japan'])
 
-# Fonction de mise à jour du graphique en fonction de la région sélectionnée
-def update_plot(region):
+# Fonction de mise à jour du graphique en fonction du continent sélectionné
+def update_plot(continent):
     plt.figure(figsize=(12, 6))
     
-    # Filtrer les données en fonction de la région sélectionnée
-    filtered_data = donnees if region == 'Toutes les régions' else donnees[donnees['continent'] == region]
+    # Filtrer les données en fonction du continent sélectionné
+    filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'] == continent]
 
-    # Tracé de la distribution de chaque variable pour la région sélectionnée
+    # Tracé de la distribution de chaque variable pour le continent sélectionné
     for i, col in enumerate(filtered_data.columns):
         plt.subplot(2, len(filtered_data.columns)//2, i+1)
         sns.histplot(filtered_data[col], kde=True)
         plt.title(f'Distribution de {col}')
         plt.tight_layout()
 
-    # Tracé de nuages de points pour les paires de variables corrélées pour la région sélectionnée
+    # Tracé de nuages de points pour les paires de variables corrélées pour le continent sélectionné
     sns.pairplot(filtered_data, diag_kind='kde')
-    plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({region})')
+    plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({continent})')
 
     return plt
 
 # Afficher le widget et le graphique initial
-selected_region = region_selector
-if selected_region != 'Toutes les régions':
-    st.pyplot(update_plot(selected_region))
+selected_continent = continent_selector
+if selected_continent != 'Tous les continents':
+    st.pyplot(update_plot(selected_continent))
 else:
-    st.warning("Sélectionnez une région pour afficher le graphique.")
+    st.warning("Sélectionnez un continent pour afficher le graphique.")
