@@ -25,6 +25,12 @@ def update_plot(continent):
     # Filtrer les données en fonction du continent sélectionné
     filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'] == continent]
 
+    # Display filtered_data for debugging
+    st.write("Filtered Data:", filtered_data)
+
+    # Check for NaN values in filtered_data
+    st.write("NaN Values in filtered_data:", filtered_data.isnull().sum())
+
     # Tracé de la distribution de chaque variable pour le continent sélectionné
     for i, col in enumerate(filtered_data.columns[:-1]):
         plt.subplot(2, 4, i+1)
@@ -34,6 +40,10 @@ def update_plot(continent):
     # Afficher le heatmap de corrélation
     plt.subplot(2, 4, 8)
     correlation_matrix = filtered_data.corr()
+
+    # Display correlation matrix for debugging
+    st.write("Correlation Matrix:", correlation_matrix)
+
     sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=.5)
     plt.title("Heatmap de Corrélation")
 
@@ -43,6 +53,7 @@ def update_plot(continent):
     plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({continent})')
 
     return plt
+
 
 # Afficher le widget et le graphique initial
 selected_continent = continent_selector
