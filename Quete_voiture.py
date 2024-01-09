@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 # Chargement des données
 donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv')
 
-# Print column names to check the correct name
-st.write("Column Names:", donnees.columns)
-
 # Remove trailing period from 'continent' values
 donnees['continent'] = donnees['continent'].str.rstrip('.')
 
 # Création du widget pour sélectionner le continent
 continent_selector = st.selectbox('Continent:', ['Tous les continents', 'US', 'Europe', 'Japan'])
+
+# Titre de l'application
+st.title("Analyse data des voitures entre les US, l'Europe et le Japon")
 
 # Fonction de mise à jour du graphique en fonction du continent sélectionné
 def update_plot(continent):
@@ -27,7 +27,6 @@ def update_plot(continent):
         plt.subplot(2, len(filtered_data.columns)//2, i+1)
         sns.histplot(filtered_data[col], kde=True)
         plt.title(f'Distribution de {col}')
-        plt.tight_layout()
 
     # Tracé de nuages de points pour les paires de variables corrélées pour le continent sélectionné
     sns.pairplot(filtered_data, diag_kind='kde')
