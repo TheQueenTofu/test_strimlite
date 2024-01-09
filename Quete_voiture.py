@@ -39,7 +39,8 @@ def update_plot(continent):
     sns.pairplot(filtered_data, diag_kind='kde')
     plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({continent})')
 
-    plt.tight_layout()
+    # Comment out the following line to avoid tight_layout warning
+    # plt.tight_layout()
 
     return plt
 
