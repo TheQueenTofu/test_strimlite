@@ -39,7 +39,7 @@ def update_plot(continent):
 
     # Afficher le heatmap de corrélation
     plt.subplot(2, 4, 8)
-    correlation_matrix = filtered_data.corr().fillna(0)
+    correlation_matrix = filtered_data.select_dtypes(include=['float64', 'int64']).corr().fillna(0)
     sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=.5)
     plt.title("Heatmap de Corrélation")
 
