@@ -7,6 +7,9 @@ from IPython.display import display
 # Chargement des données (remplacez 'votre_fichier.csv' par le nom de votre fichier de données)
 donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv')
 
+# Nettoyer les espaces dans la colonne 'continent'
+donnees['continent'] = donnees['continent'].str.strip()
+
 # Création d'un widget pour sélectionner le continent
 continent_selector = widgets.Dropdown(
     options=['Tous les continents', 'US', 'Europe', 'Japan'],
@@ -22,7 +25,7 @@ def update_plot(continent):
     plt.figure(figsize=(16, 8))
     
     # Filtrer les données en fonction du continent sélectionné
-    filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'].str.strip() == continent.strip()]
+    filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'] == continent]
 
     if filtered_data.empty:
         widgets.warning(f"Aucune donnée disponible pour le continent {continent}. Veuillez sélectionner un autre continent.")
