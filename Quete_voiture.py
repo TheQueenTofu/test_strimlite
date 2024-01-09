@@ -9,6 +9,9 @@ donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/q
 # Print column names to check the correct name
 st.write("Column Names:", donnees.columns)
 
+# Remove trailing period from 'continent' values
+donnees['continent'] = donnees['continent'].str.rstrip('.')
+
 # Création du widget pour sélectionner la région
 region_selector = st.selectbox('Région:', ['Toutes les régions', 'US', 'Europe', 'Japon'])
 
