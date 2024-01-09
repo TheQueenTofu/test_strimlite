@@ -7,8 +7,8 @@ from IPython.display import display
 # Chargement des données (remplacez 'votre_fichier.csv' par le nom de votre fichier de données)
 donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv')
 
-# Création d'un widget pour sélectionner la région
-region_selector = widgets.Dropdown(
+# Création d'un widget pour sélectionner le continent
+continent_selector = widgets.Dropdown(
     options=['Tous les continents', 'US', 'Europe', 'Japan'],
     value='Tous les continents',
     description='Continent:'
@@ -21,17 +21,11 @@ def update_plot(continent):
 
     plt.figure(figsize=(16, 8))
     
-    # Print unique values in the 'continent' column for debugging
-    st.write("Unique Values in 'continent' column:", donnees['continent'].unique())
-
     # Filtrer les données en fonction du continent sélectionné
     filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'].str.strip() == continent.strip()]
 
-    # Display filtered_data for debugging
-    st.write("Filtered Data:", filtered_data)
-
     if filtered_data.empty:
-        st.warning(f"Aucune donnée disponible pour le continent {continent}. Veuillez sélectionner un autre continent.")
+        widgets.warning(f"Aucune donnée disponible pour le continent {continent}. Veuillez sélectionner un autre continent.")
         return plt
 
     # Tracé de la distribution de chaque variable pour le continent sélectionné
@@ -43,10 +37,6 @@ def update_plot(continent):
     # Afficher le heatmap de corrélation
     plt.subplot(2, 4, 8)
     correlation_matrix = filtered_data.corr().fillna(0)
-
-    # Display correlation matrix for debugging
-    st.write("Correlation Matrix:", correlation_matrix)
-
     sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=.5)
     plt.title("Heatmap de Corrélation")
 
@@ -55,11 +45,11 @@ def update_plot(continent):
     sns.pairplot(filtered_data, diag_kind='kde')
     plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({continent})')
 
-    return plt
+    plt.show()
 
 # Associer la fonction de mise à jour au changement de la valeur du widget
-widgets.interactive(update_plot, continent=region_selector)
+widgets.interactive(update_plot, continent=continent_selector)
 
 # Afficher le widget et le graphique initial
-display(region_selector)
+display(continent_selector)
 update_plot('Tous les continents')
