@@ -17,7 +17,6 @@ continent_selector = st.selectbox('Continent:', ['Tous les continents', 'US', 'E
 st.title("Analyse data des voitures entre les US, l'Europe et le Japon")
 
 # Fonction de mise à jour du graphique en fonction du continent sélectionné
-# Fonction de mise à jour du graphique en fonction du continent sélectionné
 def update_plot(continent):
     # Set Seaborn context to avoid tight layout issues
     sns.set_context(rc={"lines.linewidth": 0.8})
@@ -27,14 +26,12 @@ def update_plot(continent):
     # Filtrer les données en fonction du continent sélectionné
     filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'] == continent]
 
-    # Remove trailing periods and spaces in 'continent' column
-    filtered_data['continent'] = filtered_data['continent'].str.strip('.')
-
     # Display filtered_data for debugging
     st.write("Filtered Data:", filtered_data)
 
-    # Check for NaN values in filtered_data
-    st.write("NaN Values in filtered_data:", filtered_data.isnull().sum())
+    if filtered_data.empty:
+        st.warning(f"Aucune donnée disponible pour le continent {continent}. Veuillez sélectionner un autre continent.")
+        return plt
 
     # Tracé de la distribution de chaque variable pour le continent sélectionné
     for i, col in enumerate(filtered_data.columns[:-1]):
