@@ -17,6 +17,9 @@ st.title("Analyse data des voitures entre les US, l'Europe et le Japon")
 
 # Fonction de mise à jour du graphique en fonction du continent sélectionné
 def update_plot(continent):
+    # Set Seaborn context to avoid tight layout issues
+    sns.set_context(rc={"lines.linewidth": 0.8})
+
     plt.figure(figsize=(16, 8))
     
     # Filtrer les données en fonction du continent sélectionné
@@ -38,9 +41,6 @@ def update_plot(continent):
     plt.subplot(2, 4, 5)
     sns.pairplot(filtered_data, diag_kind='kde')
     plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({continent})')
-
-    # Comment out the following line to avoid tight_layout warning
-    # plt.tight_layout()
 
     return plt
 
