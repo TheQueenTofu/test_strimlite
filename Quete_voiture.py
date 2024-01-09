@@ -9,7 +9,6 @@ donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/q
 # Remove trailing period from 'continent' values
 donnees['continent'] = donnees['continent'].str.strip('.')
 
-
 # Création du widget pour sélectionner le continent
 continent_selector = st.selectbox('Continent:', ['Tous les continents', 'US', 'Europe', 'Japan'])
 
@@ -23,8 +22,11 @@ def update_plot(continent):
 
     plt.figure(figsize=(16, 8))
     
+    # Print unique values in the 'continent' column for debugging
+    st.write("Unique Values in 'continent' column:", donnees['continent'].unique())
+
     # Filtrer les données en fonction du continent sélectionné
-    filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'] == continent]
+    filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'].str.strip() == continent]
 
     # Display filtered_data for debugging
     st.write("Filtered Data:", filtered_data)
@@ -55,7 +57,6 @@ def update_plot(continent):
     plt.suptitle(f'Nuages de points pour les paires de variables corrélées ({continent})')
 
     return plt
-
 
 
 # Afficher le widget et le graphique initial
