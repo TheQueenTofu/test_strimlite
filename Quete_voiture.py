@@ -7,8 +7,8 @@ from IPython.display import display
 # Chargement des données (remplacez 'votre_fichier.csv' par le nom de votre fichier de données)
 donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv')
 
-# Nettoyer les espaces dans la colonne 'continent'
-donnees['continent'] = donnees['continent'].str.strip()
+# Nettoyer les espaces et les points dans la colonne 'continent'
+donnees['continent'] = donnees['continent'].str.strip().str.rstrip('.')
 
 # Création d'un widget pour sélectionner le continent
 continent_selector = widgets.Dropdown(
