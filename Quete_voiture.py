@@ -1,19 +1,18 @@
-import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import ipywidgets as widgets
+from IPython.display import display
 
-# Chargement des données
+# Chargement des données (remplacez 'votre_fichier.csv' par le nom de votre fichier de données)
 donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv')
 
-# Remove trailing period from 'continent' values
-donnees['continent'] = donnees['continent'].str.strip('.')
-
-# Création du widget pour sélectionner le continent
-continent_selector = st.selectbox('Continent:', ['Tous les continents', 'US', 'Europe', 'Japan'])
-
-# Titre de l'application
-st.title("Analyse data des voitures entre les US, l'Europe et le Japon")
+# Création d'un widget pour sélectionner la région
+region_selector = widgets.Dropdown(
+    options=['Tous les continents', 'US', 'Europe', 'Japan'],
+    value='Tous les continents',
+    description='Continent:'
+)
 
 # Fonction de mise à jour du graphique en fonction du continent sélectionné
 def update_plot(continent):
@@ -26,7 +25,7 @@ def update_plot(continent):
     st.write("Unique Values in 'continent' column:", donnees['continent'].unique())
 
     # Filtrer les données en fonction du continent sélectionné
-    filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'].str.strip() == continent]
+    filtered_data = donnees if continent == 'Tous les continents' else donnees[donnees['continent'].str.strip() == continent.strip()]
 
     # Display filtered_data for debugging
     st.write("Filtered Data:", filtered_data)
@@ -43,7 +42,7 @@ def update_plot(continent):
 
     # Afficher le heatmap de corrélation
     plt.subplot(2, 4, 8)
-    correlation_matrix = filtered_data.corr()
+    correlation_matrix = filtered_data.corr().fillna(0)
 
     # Display correlation matrix for debugging
     st.write("Correlation Matrix:", correlation_matrix)
@@ -58,10 +57,9 @@ def update_plot(continent):
 
     return plt
 
+# Associer la fonction de mise à jour au changement de la valeur du widget
+widgets.interactive(update_plot, continent=region_selector)
 
 # Afficher le widget et le graphique initial
-selected_continent = continent_selector
-if selected_continent != 'Tous les continents':
-    st.pyplot(update_plot(selected_continent))
-else:
-    st.warning("Sélectionnez un continent pour afficher le graphique.")
+display(region_selector)
+update_plot('Tous les continents')
