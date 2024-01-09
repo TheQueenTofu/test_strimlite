@@ -1,40 +1,41 @@
+import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import streamlit as st
 
-# Chargement des données (remplacez 'votre_fichier.csv' par le nom de votre fichier de données)
-donnees = pd.read_csv('https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv')
+url = 'https://raw.githubusercontent.com/murpi/wilddata/master/quests/cars.csv'
+df = pd.read_csv(url)
 
-# Création d'un widget pour sélectionner le continent
-continent_selector = st.selectbox('Sélectionnez un continent', ['Tous les continents', 'US', 'Europe', 'Japan'])
+# Renommer les colonnes pour plus de clarté
+df = df.rename(columns={'mpg': 'Miles_per_Gallon', 'cylinders': 'Cylinders', 'cubicinches': 'CubicInches',
+                        'hp': 'Horsepower', 'weightlbs': 'Weightlbs', 'time-to-60': 'Time_to_60',
+                        'year': 'Year', 'continent': 'Continent'})
 
-# Filtrer les données en fonction du continent sélectionné
-if continent_selector != 'Tous les continents':
-    filtered_data = donnees[donnees['continent'] == continent_selector]
-else:
-    filtered_data = donnees
+# Nettoyer la colonne 'Weightlbs' en supprimant les caractères non numériques
+df['Weightlbs'] = pd.to_numeric(df['Weightlbs'].replace('[^\d.]', '', regex=True), errors='coerce')
 
-# Affichage du titre
-st.title("Analyse des données des voitures entre les US, l'Europe et le Japon")
+# Sidebar pour le filtrage par région
+region_filter = st.sidebar.selectbox('Filtrer par région:', df['Continent'].unique())
 
-# Afficher le nombre de données disponibles pour le continent sélectionné
-st.write(f"Nombre de données pour le continent {continent_selector}: {len(filtered_data)}")
+# Filtrage du dataframe en fonction de la région sélectionnée
+filtered_df = df[df['Continent'] == region_filter]
 
-# Afficher les statistiques descriptives
-st.write("Statistiques descriptives:")
-st.write(filtered_data.describe())
+# Analyse de corrélation
+st.header('Analyse de corrélation')
+correlation_matrix = filtered_df.corr(numeric_only=True)  # Explicitly set numeric_only to True
+fig, ax = plt.subplots()
+sns.heatmap(correlation_matrix, annot=True, ax=ax)
+st.pyplot(fig)
 
-# Afficher les colonnes uniques de la colonne 'continent'
-st.write("Uniques valeurs dans la colonne 'continent':", filtered_data['continent'].unique())
+# Analyse de distribution
+st.header('Analyse de distribution')
+for column in filtered_df.columns:
+    if filtered_df[column].dtype in ['int64', 'float64']:
+        st.subheader(f'Distribution de {column}')
+        fig, ax = plt.subplots()
+        sns.histplot(filtered_df[column], kde=True, ax=ax)
+        st.pyplot(fig)
 
-# Afficher le nuage de points pour les variables corrélées
-st.write(f'Nuage de points pour les variables corrélées ({continent_selector}):')
-sns.pairplot(filtered_data, diag_kind='kde')
-st.pyplot()
-
-# Afficher le heatmap de corrélation
-st.write(f"Heatmap de corrélation ({continent_selector}):")
-correlation_matrix = filtered_data.select_dtypes(include=['float64', 'int64']).corr().fillna(0)
-sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=.5)
-st.pyplot()
+# Affichage du dataframe
+st.write(f'## Analyse de voitures par région ({region_filter})')
+st.write(filtered_df)
